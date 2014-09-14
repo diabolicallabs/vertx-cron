@@ -1,52 +1,234 @@
-/*
- * Example Groovy integration test that deploys the module that this project builds.
- *
- * Quite often in integration tests you want to deploy the same module for all tests and you don't want tests
- * to start before the module has been deployed.
- *
- * This test demonstrates how to do that.
- */
-
 import static org.vertx.testtools.VertxAssert.*
-
-// And import static the VertxTests script
 import org.vertx.groovy.testtools.VertxTests;
 
-// The test methods must being with "test"
+def test5SecondNoRepeat() {
 
-def testPing() {
-  container.logger.info("in testPing()")
-  println "vertx is ${vertx.getClass().getName()}"
-  vertx.eventBus.send("ping-address", "ping!", { reply ->
-    assertEquals("pong!", reply.body())
+    def scheduled_address = "address_${new Date().format('yyyyMMddhhmmssSSS')}".toString()
 
-    /*
-    If we get here, the test is complete
-    You must always call `testComplete()` at the end. Remember that testing is *asynchronous* so
-    we cannot assume the test is complete by the time the test method has finished executing like
-    in standard synchronous tests
-    */
-    testComplete()
-  })
+    vertx.eventBus.registerHandler(scheduled_address) { message ->
+        container.logger.info "Handler message: ${message.body}"
+        assertEquals('goose', message.body)
+        message.reply(null)
+        testComplete()
+    }
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            address: scheduled_address,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('ok', result.body.status)
+        assertNotNull(result.body.scheduler_id)
+        assertNotNull(result.body.next_run_time)
+    }
+}
+def testInvalidCron() {
+
+    def event = [
+            cron_expression: '*/5 squid * * * ?',
+            repeat: false,
+            address: 'none',
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('Illegal characters'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testCronMissing() {
+
+    def event = [
+            repeat: true,
+            address: 'none',
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('cron_expression must be specified'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testCronBadType() {
+
+    def event = [
+            cron_expression: 5,
+            repeat: false,
+            address: 'none',
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('cron_expression must be a string'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testInvalidRepeat() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: 'rat',
+            address: 'none',
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('repeat must be true or false'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testMissingAddress() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('address must be specified'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testAddressInvalidType() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            address: 777,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('address must be a string'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testResultAddressInvalidType() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            address: 'rat',
+            result_address: 88,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('result_address must be a string'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testActionInvalidType() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            address: 'rat',
+            result_address: 'squid',
+            action: 23,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('action must be a string'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
+}
+def testActionInvalidValue() {
+
+    def event = [
+            cron_expression: '*/5 * * * * ?',
+            repeat: false,
+            address: 'rat',
+            result_address: 'squid',
+            action: 'cry',
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('error', result.body.status)
+        assertTrue(result.body.message.contains('action must be "send" or "publish"'))
+        assertNull(result.body.scheduler_id)
+        assertNull(result.body.next_run_time)
+        testComplete()
+    }
 }
 
-def testSomethingElse() {
-  testComplete()
-}
-
-// Make sure you initialize
 VertxTests.initialize(this)
 
-// The script is execute for each test, so this will deploy the module for each one
-// Deploy the module - the System property `vertx.modulename` will contain the name of the module so you
-// don't have to hardecode it in your tests
-container.deployModule(System.getProperty("vertx.modulename"), { asyncResult ->
-  // Deployment is asynchronous and this this handler will be called when it's complete (or failed)
-  assertTrue(asyncResult.succeeded)
-  assertNotNull("deploymentID should not be null", asyncResult.result())
-  // If deployed correctly then start the tests!
-  VertxTests.startTests(this)
-})
+def config = [
+        address_base: 'cron.test'
+]
+
+container.deployModule(System.getProperty("vertx.modulename"), config) { asyncResult ->
+
+    if (!asyncResult.succeeded) {
+       container.logger.error "Deployment failed with: ${asyncResult.cause()}"
+    }
+
+    assertTrue(asyncResult.succeeded)
+    assertNotNull("deploymentID should not be null", asyncResult.result())
+
+    VertxTests.startTests(this)
+}
 
 
 

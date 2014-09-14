@@ -1,5 +1,9 @@
-// Example JSON config file
+// Default configuration
+//
+// address_base     This is the base address that the scheduler will use. It will listen on:
+//                  <address_base>.schedule     to schedule events
+//                  <address_base>.cancel       to cancel a previously scheduled event
 
 {
-  "foo": "bar"
+  "address_base": "cron.message"
 }
