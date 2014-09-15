@@ -40,7 +40,6 @@ class CronEventSchedulerVertical extends Verticle {
 
             if (!cron_expression) error_messages.add 'cron_expression must be specified'
             if (!scheduled_address) error_messages.add 'address must be specified'
-            if (!scheduled_message) error_messages.add 'message must be specified'
 
             if (cron_expression && !(cron_expression instanceof String)) error_messages.add 'cron_expression must be a string'
             if (scheduled_address && !(scheduled_address instanceof String)) error_messages.add 'address must be a string'
@@ -65,7 +64,7 @@ class CronEventSchedulerVertical extends Verticle {
 
             CronExpression cron = new CronExpression(cron_expression)
 
-            long scheduler_id = new Date().getTime()
+            String scheduler_id = UUID.randomUUID().toString()
 
             Closure schedule
             schedule = {
@@ -105,43 +104,78 @@ class CronEventSchedulerVertical extends Verticle {
         eb.registerHandler(cancel_address) { message ->
 
             logger.debug "${create_address} received message of: ${message.body}"
-            if (!message.body || !(message.body instanceof Long)) {
-                message.reply([status: 'error', message: 'The message must be a long representing the scheduler_id returned by the create handler'])
+            if (!message.body || !(message.body instanceof String)) {
+                message.reply([status: 'error', message: 'The message must be a string representing the scheduler_id returned by the create handler'])
                 return
             }
 
             ConcurrentSharedMap scheduler_id_map = vertx.sharedData.getMap(scheduler_map_name)
-            long timer_id = scheduler_id_map[message.body]
+            if (!scheduler_id_map.containsKey(message.body)) {
+                message.reply([status: 'error', message: 'The scheduler_id was not found'])
+                return
+            }
 
-            vertx.cancelTimer(timer_id)
+            vertx.cancelTimer(scheduler_id_map[message.body])
 
             eb.publish(map_remove_address, message.body)
 
             message.reply([status: 'ok'])
         }
 
+        // Since in Vertx 2.x, shared maps are not shared across instances, we will publish to this address so that verticals deployed on other vertx instances will have the same information
         logger.debug "registering map add address of ${map_add_address}"
         eb.registerHandler(map_add_address) { message ->
 
             logger.debug "${map_add_address} received: ${message.body}"
-            Long scheduler_id = message.body.scheduler_id
-            Long timer_id = message.body.timer_id
+            def scheduler_id = message.body.scheduler_id
+            def timer_id = message.body.timer_id
+
+            List<String> error_messages = []
+
+            if (!scheduler_id || !(scheduler_id instanceof String)) error_messages.add 'scheduler_id must be specified as a string'
+            if (!timer_id || !(timer_id instanceof Integer || (timer_id instanceof Long))) error_messages.add 'timer_id must be specified as a long'
+
+            if (error_messages) {
+                String error_message = error_messages.join(', ')
+                logger.error "${map_add_address} ${error_message}"
+                message.reply([status: 'error', message: error_message])
+                return
+            }
 
             ConcurrentSharedMap scheduler_id_map = vertx.sharedData.getMap(scheduler_map_name)
             scheduler_id_map[scheduler_id] = timer_id
 
-            message.reply(null)
+            message.reply([status: 'ok'])
         }
 
+        // Since in Vertx 2.x, shared maps are not shared across instances, we will publish to this address so that verticals deployed on other vertx instances will have the same information
         logger.debug "registering map remove address of ${map_remove_address}"
         eb.registerHandler(map_remove_address) { message ->
 
             logger.debug "${map_remove_address} received: ${message.body}"
-            ConcurrentSharedMap scheduler_id_map = vertx.sharedData.getMap(scheduler_map_name)
-            scheduler_id_map.remove(message.body)
 
-            message.reply(null)
+            if (!message.body || !(message.body instanceof String)) {
+                def error_message = "message must be the scheduler_id as a string"
+                logger.error "${map_remove_address} ${error_message}"
+                message.reply([status: 'error', message: error_message])
+                return
+            }
+
+            ConcurrentSharedMap scheduler_id_map = vertx.sharedData.getMap(scheduler_map_name)
+            if (scheduler_id_map.containsKey(message.body)) scheduler_id_map.remove(message.body)
+            else logger.warn "${map_remove_address} scheduler_id ${message.body} was not found. Nothing removed."
+
+            message.reply([status: 'ok'])
         }
     }
 
+    def stop() {
+
+        // Make sure our shared map gets removed if this Vertical is undeployed
+        if (container.config.address_base) {
+            String scheduler_map_name = "${container.config.address_base}.map"
+            vertx.sharedData.removeMap(scheduler_map_name)
+            container.logger.debug "${scheduler_map_name} removed"
+        }
+    }
 }

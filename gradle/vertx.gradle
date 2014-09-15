@@ -151,8 +151,8 @@ test {
   testLogging.showStandardStreams = true
 
   testLogging { exceptionFormat "full" }
-    systemProperty 'org.vertx.logger-delegate-factory-class-name', 'org.vertx.java.core.logging.impl.Log4jLogDelegateFactory'
-    systemProperty 'log4j.configuration', 'file:/opt/vertx/conf/log4j.properties'
+//    systemProperty 'org.vertx.logger-delegate-factory-class-name', 'org.vertx.java.core.logging.impl.Log4jLogDelegateFactory'
+//    systemProperty 'log4j.configuration', 'file:/opt/vertx/conf/log4j.properties'
 
   systemProperty 'vertx.mods', "build/mods"
   systemProperty 'vertx.test.timeout', testtimeout

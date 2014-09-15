@@ -65,28 +65,28 @@ Please edit the details below.
 def configurePom(def pom) {
   pom.project {
     name rootProject.name
-    description 'Description of your module here'
-    inceptionYear '2013'
+    description 'Provides an event scheduling feature to Vertx using a cron expression'
+    inceptionYear '2014'
     packaging 'jar'
 
-    url 'Your project url'
+    url 'https://github.com/diabolicallab/vertx-cron'
 
     developers {
       developer {
-        id 'developer id (e.g. github username)'
-        name 'developer name'
-        email 'developer email'
+        id 'diabolicallab'
+        name 'David Bush'
+        email 'david@diabolicallab.com'
       }
     }
 
     scm {
-      url 'url to your repo - e.g. github repo url'
+      url 'https://github.com/diabolicallab/vertx-cron'
     }
 
     licenses {
       license {
-        name 'The name of the license used, e.g.: The Apache Software License, Version 2.0'
-        url 'URl to the license, e.g.: http://www.apache.org/licenses/LICENSE-2.0.txt'
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
         distribution 'repo'
       }
     }
