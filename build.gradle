@@ -80,7 +80,7 @@ def configurePom(def pom) {
     }
 
     scm {
-      url 'https://github.com/diabolicallab/vertx-cron'
+      url 'https://github.com/diabolicallab/vertx-cron.git'
     }
 
     licenses {

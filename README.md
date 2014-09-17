@@ -7,6 +7,10 @@ the handler completes.
 ## Name
 The name of the module is vertx-cron.
 
+## Vertx Dependency
+
+com.diabolicallab:vertx-cron:1.0.0
+
 ## Configuration
 
     {
@@ -259,4 +263,4 @@ are configured to use other timezones, then the scheduler vertical running on th
 on that local timezone. 
 
 A near future release will fix that problem. For now, we recommend setting all of your servers to use the same timezone
-no matter where they are located. We set our servers to use UTC for this an a variety of other reasons not vertx related.
+no matter where they are located. We set our servers to use UTC for this and a variety of other reasons not vertx related.
