@@ -37,6 +37,7 @@ class CronEventSchedulerVertical extends Verticle {
         String map_add_address = "${container.config.address_base}.map.add"
         String map_remove_address = "${container.config.address_base}.map.remove"
 
+
         logger.debug "registering cron create address of ${create_address}"
         eb.registerHandler(create_address) { message ->
 
@@ -49,6 +50,7 @@ class CronEventSchedulerVertical extends Verticle {
             def result_address = message?.body?.result_address
             def scheduled_action = message?.body?.action ?: 'send'
             Object scheduled_message = message?.body?.message
+            def timezone_name = container.config?.timezone_name
 
             List<String> error_messages = []
 
@@ -62,6 +64,9 @@ class CronEventSchedulerVertical extends Verticle {
             if (scheduled_action instanceof String) {
                 if (!['send','publish'].contains(scheduled_action)) error_messages.add 'action must be "send" or "publish"'
             } else error_messages.add 'action must be a string'
+            if (timezone_name && !TimeZone.getAvailableIDs().contains(timezone_name)) {
+                error_messages.add "${timezone_name} is not a valid timezone.".toString()
+            }
 
             if (error_messages) {
                 String error_message = error_messages.join(', ')
@@ -77,6 +82,10 @@ class CronEventSchedulerVertical extends Verticle {
             }
 
             CronExpression cron = new CronExpression(cron_expression)
+            if (timezone_name) {
+                logger.debug "using ${timezone_name} timezone"
+                cron.setTimeZone(TimeZone.getTimeZone(timezone_name))
+            }
 
             String scheduler_id = UUID.randomUUID().toString()
 

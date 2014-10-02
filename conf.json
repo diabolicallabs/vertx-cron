@@ -3,6 +3,8 @@
 // address_base     This is the base address that the scheduler will use. It will listen on:
 //                  <address_base>.schedule     to schedule events
 //                  <address_base>.cancel       to cancel a previously scheduled event
+// timezone_name    The is a valid timezone that will be used to interpret the cron expression
+//                  If not specified the timezone set on the machine is used
 
 {
   "address_base": "cron.message"
