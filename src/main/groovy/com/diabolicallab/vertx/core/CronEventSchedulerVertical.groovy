@@ -43,11 +43,11 @@ class CronEventSchedulerVertical extends Verticle {
             Date next_run = cron.getNextValidTimeAfter(new Date(now.getTime() + 100))
             long delay = next_run.getTime() - now.getTime()
 
-            logger.info "Scheduling $scheduler_id for $next_run"
+            logger.debug "Scheduling $scheduler_id for $next_run"
             long timer_id = vertx.setTimer(delay) { timer_id ->
                 scheduled_closure.call()
                 if (repeat) {
-                    logger.info "Rescheduling $scheduler_id"
+                    logger.debug "Rescheduling $scheduler_id"
                     return schedule.call(scheduler_id, cron, repeat, scheduled_closure)
                 }
                 else eb.publish(map_remove_address, scheduler_id)
