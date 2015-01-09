@@ -28,6 +28,38 @@ def test5SecondNoRepeat() {
         assertNotNull(result.body.next_run_time)
     }
 }
+def teXXstMultiSecondNoRepeat() {
+
+    def scheduled_address = "address_${new Date().format('yyyyMMddhhmmssSSS')}".toString()
+
+    def call_times = 0
+    vertx.eventBus.registerHandler(scheduled_address) { message ->
+        container.logger.info "Handler message: ${message.body} call_times ${call_times}"
+        assertEquals('goose', message.body)
+        message.reply(null)
+        call_times++
+    }
+    vertx.setTimer(60000 * 2) {
+        assertEquals(call_times, 6)
+        testComplete()
+    }
+
+    def event = [
+            cron_expression: '1,5,10 * * * * ?',
+            repeat: true,
+            address: scheduled_address,
+            message: 'goose'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('ok', result.body.status)
+        assertNotNull(result.body.scheduler_id)
+        assertNotNull(result.body.next_run_time)
+    }
+}
 def testNullEvent() {
 
     def scheduled_address = "address_${new Date().format('yyyyMMddhhmmssSSS')}".toString()
@@ -315,6 +347,40 @@ def testCancel() {
         }
     }
 
+    def event = [
+            cron_expression: '*/3 * * * * ?',
+            repeat: true,
+            address: scheduled_address,
+            message: 'polecat'
+    ]
+
+    container.logger.info "about to send ${event} to cron.test.create"
+
+    vertx.eventBus.send('cron.test.schedule', event) { result ->
+        container.logger.info "create result: ${result.body}"
+        assertEquals('ok', result.body.status)
+        assertNotNull(result.body.scheduler_id)
+        assertNotNull(result.body.next_run_time)
+        scheduler_id = result.body.scheduler_id
+    }
+}
+def testRepeat() {
+
+    def scheduled_address = "address_${new Date().format('yyyyMMddhhmmssSSS')}".toString()
+    String scheduler_id
+    def times_called = 0
+
+    vertx.eventBus.registerHandler(scheduled_address) { message ->
+        container.logger.info "Handler message: ${message.body}"
+        assertEquals('polecat', message.body)
+        times_called++
+        message.reply(null)
+    }
+
+    vertx.setTimer(1000 * 10) { timer_id ->
+        assertTrue(times_called > 2)
+        testComplete()
+    }
     def event = [
             cron_expression: '*/3 * * * * ?',
             repeat: true,

@@ -17,7 +17,6 @@ package com.diabolicallab.vertx.core
 import org.quartz.CronExpression
 import org.vertx.groovy.core.eventbus.EventBus
 import org.vertx.groovy.platform.Verticle
-import groovy.json.JsonOutput
 import org.vertx.java.core.logging.Logger
 import org.vertx.java.core.shareddata.ConcurrentSharedMap
 
@@ -37,6 +36,44 @@ class CronEventSchedulerVertical extends Verticle {
         String map_add_address = "${container.config.address_base}.map.add"
         String map_remove_address = "${container.config.address_base}.map.remove"
 
+        Closure schedule
+        schedule =  { String scheduler_id, CronExpression cron, boolean repeat = true, Closure scheduled_closure ->
+
+            Date now = new Date()
+            Date next_run = cron.getNextValidTimeAfter(new Date(now.getTime() + 100))
+            long delay = next_run.getTime() - now.getTime()
+
+            logger.info "Scheduling $scheduler_id for $next_run"
+            long timer_id = vertx.setTimer(delay) { timer_id ->
+                scheduled_closure.call()
+                if (repeat) {
+                    logger.info "Rescheduling $scheduler_id"
+                    return schedule.call(scheduler_id, cron, repeat, scheduled_closure)
+                }
+                else eb.publish(map_remove_address, scheduler_id)
+            }
+            eb.publish(map_add_address, [scheduler_id: scheduler_id, timer_id: timer_id])
+
+            return next_run
+        }
+
+        Closure schedule_publish = { String scheduler_id, CronExpression cron, String address, event, boolean repeat = true ->
+            def next_run = schedule(scheduler_id, cron, repeat) {
+                eb.publish(address, event)
+            }
+
+            return next_run
+        }
+
+        Closure schedule_send = { String scheduler_id, CronExpression cron, String address, event, boolean repeat = true, String result_address = null ->
+            def next_run = schedule(scheduler_id, cron, repeat) {
+                eb.send(address, event) { response ->
+                    if (result_address) eb.send(result_address, response.body)
+                }
+            }
+
+            return next_run
+        }
 
         logger.debug "registering cron create address of ${create_address}"
         eb.registerHandler(create_address) { message ->
@@ -45,7 +82,7 @@ class CronEventSchedulerVertical extends Verticle {
 
             def cron_expression = message?.body?.cron_expression
             def repeat = message?.body?.repeat
-            if (repeat == null) repeat = true
+            //if (repeat == null) repeat = true
             def scheduled_address = message?.body?.address
             def result_address = message?.body?.result_address
             def scheduled_action = message?.body?.action ?: 'send'
@@ -88,45 +125,18 @@ class CronEventSchedulerVertical extends Verticle {
             }
 
             String scheduler_id = UUID.randomUUID().toString()
+            Date next_run
 
-            Closure schedule
-            schedule = {
-                Date now = new Date()
-                Date next_run = cron.getNextValidTimeAfter(now)
-                long delay = next_run.getTime() - now.getTime()
+            if (scheduled_action.toLowerCase() == 'send') next_run = schedule_send(scheduler_id, cron, scheduled_address, scheduled_message, repeat, result_address)
+            else next_run = schedule_publish(scheduler_id, cron, scheduled_address, scheduled_message, repeat)
 
-                Closure local_handler = { timer_id ->
-                    if (scheduled_action.toLowerCase() == 'send') {
-                        logger.debug "sending ${scheduled_address} a message of ${scheduled_message}"
-                        eb.send(scheduled_address, scheduled_message) { result ->
-                            if (result_address) {
-                                eb.send(result_address, result.body)
-                            }
-                        }
-                    } else {
-                        logger.debug "sending ${scheduled_address} a message of ${scheduled_message}"
-                        eb.publish(scheduled_address, scheduled_message)
-                    }
-                    if (repeat) schedule()
-                    else eb.publish(map_remove_address, scheduler_id)
-                }
-
-                long timer_id = vertx.setTimer(delay, local_handler)
-
-                logger.debug "scheduled next message for ${scheduled_address} at ${next_run}"
-
-                eb.publish(map_add_address, [scheduler_id: scheduler_id, timer_id: timer_id])
-
-                message.reply([status: 'ok', scheduler_id: scheduler_id, next_run_time: JsonOutput.toJson(next_run)])
-            }
-
-            schedule()
+            message.reply([status: 'ok', scheduler_id: scheduler_id, next_run_time: next_run.format("yyyy-MM-dd'T'HH:mm:ssZ",TimeZone.getTimeZone("GMT"))])
         }
 
         logger.debug "registering cron cancel address of ${cancel_address}"
         eb.registerHandler(cancel_address) { message ->
 
-            logger.debug "${create_address} received message of: ${message.body}"
+            logger.debug "${cancel_address} received message of: ${message.body}"
             if (!message.body || !(message.body instanceof String)) {
                 message.reply([status: 'error', message: 'The message must be a string representing the scheduler_id returned by the create handler'])
                 return
