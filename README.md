@@ -1,7 +1,7 @@
 # Cron Scheduler for Eclipse Vert.x
 This module allows you to schedule an event using a Cron specification. It can either send or publish a message to the address of
-your choice. If the handler of that message returns a response, you can specify where to send that response when
-the handler completes.
+your choice. If the consumer of that message returns a response, you can specify where to send that response when
+the consumer completes.
 
 It also provides an RxJava Observable for use with Vert.x Rx.
 
@@ -34,7 +34,7 @@ A list of valid timezones is at the end of this document.
       "address_base": "cron.scheduler"
     }
 
-This will cause the Cron Scheduler to create a public handlers named: "cron.scheduler.schedule"
+This will cause the Cron Scheduler to create a public consumer named: "cron.scheduler.schedule"
     
 
 
@@ -105,7 +105,7 @@ Cron Scheduler would then wait for a response from "stock.quotes.list" and forwa
 
 ## CronObservable
 
-If you are using Ver.x Rx for reactive programming, you can make use of the CronObservable.
+If you are using Vert.x Rx for reactive programming, you can make use of the CronObservable.
 
 It requires a Vert.x Scheduler, the cron specification in the aforementioned format, and an
 optional timezone.

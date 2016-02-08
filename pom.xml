@@ -10,6 +10,29 @@
     <packaging>jar</packaging>
     <version>3.2.1</version>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
+    <name>Cron for Eclipse Vert.x</name>
+
+    <url>https://github.com/diabolicallabs/vertx-cron</url>
+
+    <scm>
+        <url>https://github.com/diabolicallabs/vertx-cron</url>
+        <connection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</connection>
+        <developerConnection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/diabolicallabs/vertx-cron/issues</url>
+    </issueManagement>
+
+    <description>https://github.com/diabolicallabs/vertx-cron</description>
+
     <properties>
         <main.verticle>com.diabolicallabs.vertx.cron.CronEventSchedulerVertical</main.verticle>
         <vertx.version>3.2.1</vertx.version>
@@ -143,6 +166,16 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
             </plugin>
 
         </plugins>
