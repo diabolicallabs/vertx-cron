@@ -62,10 +62,11 @@ public class CronRxTest {
     Calendar calendar = new GregorianCalendar();
 
     calendar.setTimeZone(TimeZone.getTimeZone("Pacific/Midway"));
+    calendar.add(Calendar.SECOND, 2);
 
     int hour = calendar.get(Calendar.HOUR_OF_DAY);
     int minute = calendar.get(Calendar.MINUTE);
-    int second = calendar.get(Calendar.SECOND) + 2;
+    int second = calendar.get(Calendar.SECOND);
 
     String cronspec = second + " " + minute + " " + hour + " * * ?";
 
