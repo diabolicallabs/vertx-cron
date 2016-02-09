@@ -6,7 +6,7 @@
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.2</version>
+    <version>3.2.3-SNAPSHOT</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -22,7 +22,7 @@
         <url>https://github.com/diabolicallabs/vertx-cron</url>
         <connection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</connection>
         <developerConnection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</developerConnection>
-        <tag>vertx-cron-3.2.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
