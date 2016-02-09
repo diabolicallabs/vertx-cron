@@ -7,7 +7,15 @@ It also provides an RxJava Observable for use with Vert.x Rx.
 
 ## Event Bus Cron Scheduler
 
+## Maven Dependency
 
+```
+<dependency>
+    <groupId>com.diabolicallabs</groupId>
+    <artifactId>vertx-cron</artifactId>
+    <version>3.2.1</version>
+</dependency>
+```
 ## Configuration
 
     {
@@ -22,11 +30,6 @@ It will create a public consumer for:
     
     <address_base>.schedule -- used to schedule an event
 
-
-
-A list of valid timezones is at the end of this document.
- 
-*Note: At Diabolical Labs, vertical == verticle :-)*
 
 ## Configuration Example
 
@@ -61,7 +64,7 @@ The message you send will conform to the following JSON schema:
     }
 
 **cron_expression** is a standard cron expression as is frequently used on Linux systems. As an example, "*/5 * * * * ?" would result in an event
-being fired every 5 seconds. 
+being fired every 5 seconds on the 5's.
 
 Most Cron implementation do not allow the scheduling of events down to the second, they will only allow minutely specifications. 
 We are borrowing the org.quartz.CronExpression class from the Quartz Scheduler project that *does* allow the specification of seconds. 
@@ -74,6 +77,8 @@ none is specified, the default timezone of the machine your vertical is running 
 timezone if you anticipate that a vertical using this module may run in multiple timezones. It is also useful if
 you want to schedule an event relative to a particular timezone and don't want to calculate any time offset yourself when
 specifying the cron_expression.
+
+A list of currently valid timezones is a the end of the document.
 
 **address** is the address you want to send or publish a message to on a scheduled basis.
 
