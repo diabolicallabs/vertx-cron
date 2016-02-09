@@ -6,7 +6,7 @@
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.3-SNAPSHOT</version>
+    <version>3.2.1</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -16,7 +16,16 @@
 
     <name>Cron for Eclipse Vert.x</name>
 
+    <description>https://github.com/diabolicallabs/vertx-cron</description>
+
     <url>https://github.com/diabolicallabs/vertx-cron</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
     <scm>
         <url>https://github.com/diabolicallabs/vertx-cron</url>
@@ -29,7 +38,11 @@
         <url>https://github.com/diabolicallabs/vertx-cron/issues</url>
     </issueManagement>
 
-    <description>https://github.com/diabolicallabs/vertx-cron</description>
+    <developers>
+        <developer>
+            <name>Diabolical Labs</name>
+        </developer>
+    </developers>
 
     <properties>
         <main.verticle>com.diabolicallabs.vertx.cron.CronEventSchedulerVertical</main.verticle>
@@ -177,5 +190,16 @@
         </plugins>
 
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
