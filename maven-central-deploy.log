@@ -23,19 +23,18 @@
 [INFO] Working directory: /Users/davidbush/git/vertx-cron
 [INFO] Executing: /bin/sh -c cd /Users/davidbush/git/vertx-cron && git status --porcelain .
 [INFO] Working directory: /Users/davidbush/git/vertx-cron
-[WARNING] Ignoring unrecognized line: ?? maven-central-deploy.log
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 0.703 s
-[INFO] Finished at: 2016-02-08T19:37:46-06:00
-[INFO] Final Memory: 11M/245M
+[INFO] Total time: 0.727 s
+[INFO] Finished at: 2016-02-08T19:39:37-06:00
+[INFO] Final Memory: 12M/309M
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare (default-cli) on project vertx-cron: Cannot prepare the release because you have local modifications :
-[ERROR] [pom.xml:modified]
+[ERROR] [maven-central-deploy.log:modified]
 [ERROR] -> [Help 1]
 org.apache.maven.lifecycle.LifecycleExecutionException: Failed to execute goal org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare (default-cli) on project vertx-cron: Cannot prepare the release because you have local modifications : 
-[pom.xml:modified]
+[maven-central-deploy.log:modified]
 
 	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:212)
 	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
@@ -59,7 +58,7 @@ org.apache.maven.lifecycle.LifecycleExecutionException: Failed to execute goal o
 	at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:415)
 	at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:356)
 Caused by: org.apache.maven.plugin.MojoFailureException: Cannot prepare the release because you have local modifications : 
-[pom.xml:modified]
+[maven-central-deploy.log:modified]
 
 	at org.apache.maven.plugins.release.PrepareReleaseMojo.prepareRelease(PrepareReleaseMojo.java:294)
 	at org.apache.maven.plugins.release.PrepareReleaseMojo.execute(PrepareReleaseMojo.java:240)
@@ -67,7 +66,7 @@ Caused by: org.apache.maven.plugin.MojoFailureException: Cannot prepare the rele
 	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:207)
 	... 20 more
 Caused by: org.apache.maven.shared.release.ReleaseFailureException: Cannot prepare the release because you have local modifications : 
-[pom.xml:modified]
+[maven-central-deploy.log:modified]
 
 	at org.apache.maven.shared.release.phase.ScmCheckModificationsPhase.execute(ScmCheckModificationsPhase.java:188)
 	at org.apache.maven.shared.release.DefaultReleaseManager.prepare(DefaultReleaseManager.java:234)
