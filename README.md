@@ -13,7 +13,7 @@ It also provides an RxJava Observable for use with Vert.x Rx.
 <dependency>
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
-    <version>3.2.1</version>
+    <version>3.2.1.1</version>
 </dependency>
 ```
 ## Configuration
