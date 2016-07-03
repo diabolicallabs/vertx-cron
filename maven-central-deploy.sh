@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Deploy maven artefact in current directory into Maven central repository
+# Deploy maven artifact in current directory into Maven central repository
 # using maven-release-plugin goals
 
 read -p "Really deploy to maven cetral repository  (yes/no)? "

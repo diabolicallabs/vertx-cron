@@ -3,14 +3,21 @@ package com.diabolicallabs.vertx.cron;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.impl.verticle.PackageHelper;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.core.shareddata.AsyncMap;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.shareddata.SharedData;
 import io.vertx.rx.java.RxHelper;
+import rx.Observable;
 import rx.Scheduler;
 
 import java.util.Arrays;
 import java.util.TimeZone;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class CronEventSchedulerVertical extends AbstractVerticle {
 
@@ -24,6 +31,16 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
     String addressBase = config().getString("address_base", "cron");
 
     String create_address = addressBase + ".schedule";
+    String cancel_address = addressBase + ".cancel";
+
+    eb.consumer(cancel_address, handler -> {
+
+      String id = (String) handler.body();
+      SharedData sd = vertx.sharedData();
+      sd.getLocalMap(addressBase + "cron.ids").remove(id);
+
+      handler.reply(null);
+    });
 
     eb.consumer(create_address, handler -> {
 
@@ -58,12 +75,21 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
       String cronExpression = message.getString("cron_expression");
       String timezoneName = message.getString("timezone_name");
       String scheduledAddress = message.getString("address");
-      Object scheduledMessage = message.getString("message");
+      Object scheduledMessage = message.getValue("message");
       String action = message.getString("action", "send");
       String resultAddress = message.getString("result_address");
 
+      SharedData sd = vertx.sharedData();
+      String id = UUID.randomUUID().toString();
+
+      LocalMap<String, JsonObject> map = sd.getLocalMap(addressBase + "cron.ids");
+      map.put(id, message);
+
       Scheduler scheduler = RxHelper.scheduler(vertx);
       CronObservable.cronspec(scheduler, cronExpression, timezoneName)
+        .takeWhile(timestamped -> {
+          return map.get(id) != null;
+        })
         .subscribe(
           timestamped -> {
             if (action.equals("send")) {
@@ -87,6 +113,8 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
             handler.fail(-1, fault.getMessage());
           }
         );
+
+      handler.reply(id);
 
     });
 

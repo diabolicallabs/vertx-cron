@@ -1,9 +1,11 @@
 # Cron Scheduler for Eclipse Vert.x
 This module allows you to schedule an event using a Cron specification. It can either send or publish a message to the address of
 your choice. If the consumer of that message returns a response, you can specify where to send that response when
-the consumer completes.
+the consumer completes. You can also cancel the scheduled event at a future time.
 
 It also provides an RxJava Observable for use with Vert.x Rx.
+
+Tested with Eclipse Vert.x 3.3.0
 
 ## Event Bus Cron Scheduler
 
@@ -13,7 +15,7 @@ It also provides an RxJava Observable for use with Vert.x Rx.
 <dependency>
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
-    <version>3.2.1.1</version>
+    <version>3.3.0</version>
 </dependency>
 ```
 ## Configuration
@@ -44,7 +46,10 @@ This will cause the Cron Scheduler to create a public consumer named: "cron.sche
 ## Schedule an Event
 
 To schedule an event, you need to send a message to this address: `<address_base>`.schedule where `<address_base>`
-is the name specified in the configuration. Scheduled events are not persistent. If Vertx restarts, you will have to 
+is the name specified in the configuration. The consumer of the message will return an ID as a String that corresponds to
+the scheduled event. This can be used to cancel it later.
+
+Scheduled events are not persistent. If Vertx restarts, you will have to
 schedule your events again.
 
 The message you send will conform to the following JSON schema:
@@ -96,6 +101,7 @@ Here is an example schedule message:
 
     {
         "cron_expression": "0 0 16 1/1 * ? *",
+        "timezone_name": "US/Eastern",
         "address": "stock.quotes.list",
         "message": {
             "ticker": "RHT"
@@ -105,8 +111,13 @@ Here is an example schedule message:
         "result_address": "stock.quotes.persist"
     }
   
-This message would cause the Cron Scheduler to send the message {"ticker": "RHT"} to "stock.quotes.list" every day (including weekend days) at 16:00. The 
+This message would cause the Cron Scheduler to send the message {"ticker": "RHT"} to "stock.quotes.list" every day (including weekend days) at 16:00 in the US Eastern timezone. The
 Cron Scheduler would then wait for a response from "stock.quotes.list" and forward the result to "stock.quotes.persist"
+
+## Cancel a Scheduled Event
+
+To cancel a scheduled event, you need to publish a message containing the ID of the scheduled event to this address: `<address_base>`.cancel where `<address_base>`
+is the name specified in the configuration. The ID was returned when you called `<address_base>`.schedule previously.
 
 ## CronObservable
 
@@ -128,7 +139,13 @@ Each time the cron schedule fires, the CronObservable will emit a time stamp.
           //If there is some kind of fault, handle here
         }
       );
-    
+
+## Possible Issues
+
+Kindly ensure that you are starting the cron job only once. If there are multiple instances of the verticle from which you are setting up the cron job, it will also instantiate the job that many times. This can happen if you deploy the verticle to multiple members of a cluster or you deploy your verticle with DeploymentOptions.setInstances(int instances).
+
+You can avoid this by ensuring that the vertical calling cron is deployed only once across the cluster. You can also use a system wide lock when setting up the job, then you don't have to worry about the number of deployed instances.
+
 ## Valid Timezones
 - ACT
 - AET
