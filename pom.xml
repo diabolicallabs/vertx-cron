@@ -6,7 +6,7 @@
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
     <packaging>jar</packaging>
-    <version>3.4.2-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -31,7 +31,7 @@
         <url>https://github.com/diabolicallabs/vertx-cron</url>
         <connection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</connection>
         <developerConnection>scm:git:git@github.com:diabolicallabs/vertx-cron.git</developerConnection>
-        <tag>vertx-cron-3.2.1</tag>
+        <tag>vertx-cron-3.5.0</tag>
     </scm>
 
     <issueManagement>
@@ -69,6 +69,7 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
             <version>${vertx.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -83,6 +84,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

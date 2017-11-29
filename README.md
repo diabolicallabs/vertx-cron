@@ -5,7 +5,7 @@ the consumer completes. You can also cancel the scheduled event at a future time
 
 It also provides an RxJava Observable for use with Vert.x Rx.
 
-Tested with Eclipse Vert.x 3.3.0
+Tested with Eclipse Vert.x 3.5.0
 
 ## Event Bus Cron Scheduler
 
@@ -15,7 +15,7 @@ Tested with Eclipse Vert.x 3.3.0
 <dependency>
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
-    <version>3.3.0</version>
+    <version>3.5.0</version>
 </dependency>
 ```
 ## Configuration
