@@ -1,23 +1,19 @@
 package com.diabolicallabs.vertx.cron;
 
-import io.vertx.core.AbstractVerticle;
+import io.reactivex.Scheduler;
 import io.vertx.core.Future;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.impl.verticle.PackageHelper;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.core.shareddata.AsyncMap;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.core.shareddata.SharedData;
-import io.vertx.rx.java.RxHelper;
-import rx.Observable;
-import rx.Scheduler;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.core.RxHelper;
+import io.vertx.reactivex.core.eventbus.EventBus;
+import io.vertx.reactivex.core.shareddata.LocalMap;
+import io.vertx.reactivex.core.shareddata.SharedData;
 
 import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class CronEventSchedulerVertical extends AbstractVerticle {
 

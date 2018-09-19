@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>sonatype-nexus-snapshots</id>
+            <username>david.bush@diabolicallabs.com</username>
+            <password>aG@DgJdG0y0*cee^rAzh</password>
+        </server>
+        <server>
+            <id>sonatype-nexus-staging</id>
+            <username>david.bush@diabolicallabs.com</username>
+            <password>aG@DgJdG0y0*cee^rAzh</password>
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <properties>
+                <gpg.keyname>788C3B85</gpg.keyname>
+                <gpg.passphrase>Hot02day!</gpg.passphrase>
+                <gpg.defaultKeyring>false</gpg.defaultKeyring>
+                <gpg.useagent>true</gpg.useagent>
+                <gpg.lockMode>never</gpg.lockMode>
+                <gpg.homedir>/Users/davidbush/.gnupg</gpg.homedir>
+                <gpg.publicKeyring>/Users/davidbush/.gnupg/pubring.gpg</gpg.publicKeyring>
+                <gpg.secretKeyring>/Users/davidbush/.gnupg/secring.gpg</gpg.secretKeyring>
+            </properties>
+        </profile>
+    </profiles>
+</settings>

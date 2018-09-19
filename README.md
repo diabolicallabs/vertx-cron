@@ -15,7 +15,7 @@ Tested with Eclipse Vert.x 3.5.0
 <dependency>
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
-    <version>3.5.0</version>
+    <version>3.5.3</version>
 </dependency>
 ```
 ## Configuration
@@ -132,7 +132,7 @@ Each time the cron schedule fires, the CronObservable will emit a time stamp.
     CronObservable.cronspec(scheduler, "0 0 16 1/1 * ? *", "US/Eastern")
       .take(5) //If you only want it to hit 5 times, add this, remove for continuous emission
       .subscribe(
-        timestamped -> {
+        timed -> {
           //Perform the scheduled activity here
         },
         fault -> {

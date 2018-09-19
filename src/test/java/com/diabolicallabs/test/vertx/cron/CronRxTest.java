@@ -1,16 +1,16 @@
 package com.diabolicallabs.test.vertx.cron;
 
-import com.diabolicallabs.vertx.cron.CronEventSchedulerVertical;
 import com.diabolicallabs.vertx.cron.CronObservable;
+import io.reactivex.Scheduler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
-import io.vertx.rx.java.RxHelper;
+import io.vertx.reactivex.core.RxHelper;
+import io.vertx.reactivex.core.Vertx;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import rx.Scheduler;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -28,7 +28,7 @@ public class CronRxTest {
   @Before
   public void before(TestContext context) {
 
-    scheduler = RxHelper.scheduler(rule.vertx());
+    scheduler = RxHelper.scheduler(new Vertx(rule.vertx()));
 
   }
 

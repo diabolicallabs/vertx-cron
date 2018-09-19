@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+      <entry name="!*.mps" />
+      <entry name="!*.mpsr" />
+      <entry name="!*.model" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile name="Annotation profile for Cron for Eclipse Vert.x" enabled="true">
+        <sourceOutputDir name="src/main/generated" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <option name="outputDirectory" value="$PROJECT_DIR$/src/main" />
+        <module name="vertx-cron" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="1.8">
+      <module name="vertx-cron" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="vertx-cron" options="-AoutputDirectory=$PROJECT_DIR$/src/main" />
+    </option>
+  </component>
+</project>

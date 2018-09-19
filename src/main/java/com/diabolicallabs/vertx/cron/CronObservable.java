@@ -1,11 +1,9 @@
 package com.diabolicallabs.vertx.cron;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Timed;
 import org.quartz.CronExpression;
-import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Timestamped;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -18,12 +16,12 @@ public class CronObservable {
   private CronObservable() {
   }
 
-  public static Observable<Timestamped<Long>> cronspec(Scheduler scheduler, String cronspec) {
+  public static Observable<Timed<Long>> cronspec(Scheduler scheduler, String cronspec) {
 
     return CronObservable.cronspec(scheduler, cronspec, null);
   }
 
-  public static Observable<Timestamped<Long>> cronspec(Scheduler scheduler, String cronspec, String timeZoneName) {
+  public static Observable<Timed<Long>> cronspec(Scheduler scheduler, String cronspec, String timeZoneName) {
 
     if (timeZoneName != null) {
       Boolean noneMatch = Arrays.stream(TimeZone.getAvailableIDs()).noneMatch(available -> available.equals(timeZoneName));
@@ -43,15 +41,9 @@ public class CronObservable {
         }
 
         return Observable.just(cron)
-          .map(cronExpression -> {
-            return cronExpression.getNextValidTimeAfter(new Date());
-          })
-          .map(nextRunDate -> {
-            return nextRunDate.getTime() - new Date().getTime();
-          })
-          .flatMap(delay -> {
-            return Observable.timer(delay, TimeUnit.MILLISECONDS, scheduler);
-          })
+          .map(cronExpression -> cronExpression.getNextValidTimeAfter(new Date(new Date().getTime() + 500)))
+          .map(nextRunDate -> nextRunDate.getTime() - new Date().getTime())
+          .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS, scheduler))
           .timestamp()
           .repeat();
       });

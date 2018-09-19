@@ -1,7 +1,6 @@
 package com.diabolicallabs.test.vertx.cron;
 
 import com.diabolicallabs.vertx.cron.CronEventSchedulerVertical;
-import com.diabolicallabs.vertx.cron.CronObservable;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -9,12 +8,10 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
-import io.vertx.rx.java.RxHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import rx.Scheduler;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
