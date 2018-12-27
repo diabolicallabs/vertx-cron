@@ -46,7 +46,7 @@
 
     <properties>
         <main.verticle>com.diabolicallabs.vertx.cron.CronEventSchedulerVertical</main.verticle>
-        <vertx.version>3.5.3</vertx.version>
+        <vertx.version>3.6.2</vertx.version>
     </properties>
 
     <dependencies>
@@ -76,6 +76,7 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-hazelcast</artifactId>
             <version>${vertx.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- non vert.x -->
