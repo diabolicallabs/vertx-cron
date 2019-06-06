@@ -76,9 +76,14 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
       String resultAddress = message.getString("result_address");
 
       SharedData sd = vertx.sharedData();
-      String id = UUID.randomUUID().toString();
+      String id;
+      if (message.containsKey("cron_id")) {
+        id = message.getString("cron_id")
+      } else {
+        id = UUID.randomUUID().toString();
+      }
 
-      LocalMap<String, JsonObject> map = sd.getLocalMap(addressBase + "cron.ids");
+      LocalMap<String, JsonObject> map = sd.getLocalMap(addressBase + ".cron.ids");
       map.put(id, message);
 
       Scheduler scheduler = RxHelper.scheduler(vertx);
