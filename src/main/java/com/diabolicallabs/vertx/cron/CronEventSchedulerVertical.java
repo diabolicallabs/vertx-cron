@@ -78,13 +78,15 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
       SharedData sd = vertx.sharedData();
       String id;
       if (message.containsKey("cron_id")) {
-        id = message.getString("cron_id")
+    	  id = message.getString("cron_id");
       } else {
-        id = UUID.randomUUID().toString();
+    	  id = UUID.randomUUID().toString();
       }
 
       LocalMap<String, JsonObject> map = sd.getLocalMap(addressBase + ".cron.ids");
-      map.put(id, message);
+      if (map.putIfAbsent(id, message)!=null) {
+    	  handler.fail(1, "cron_id alredy exists: " + id);
+      }
 
       Scheduler scheduler = RxHelper.scheduler(vertx);
       CronObservable.cronspec(scheduler, cronExpression, timezoneName)
