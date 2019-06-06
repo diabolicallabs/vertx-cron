@@ -86,6 +86,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
       LocalMap<String, JsonObject> map = sd.getLocalMap(addressBase + ".cron.ids");
       if (map.putIfAbsent(id, message)!=null) {
     	  handler.fail(1, "cron_id alredy exists: " + id);
+    	  return;
       }
 
       Scheduler scheduler = RxHelper.scheduler(vertx);
