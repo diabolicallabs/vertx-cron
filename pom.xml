@@ -6,7 +6,7 @@
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
     <packaging>jar</packaging>
-    <version>3.6.3-SNAPSHOT</version>
+    <version>3.7.1-SNAPSHOT</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -46,7 +46,7 @@
 
     <properties>
         <main.verticle>com.diabolicallabs.vertx.cron.CronEventSchedulerVertical</main.verticle>
-        <vertx.version>3.6.2</vertx.version>
+        <vertx.version>3.7.1</vertx.version>
     </properties>
 
     <dependencies>
