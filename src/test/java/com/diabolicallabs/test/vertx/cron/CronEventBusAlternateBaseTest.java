@@ -46,8 +46,8 @@ public class CronEventBusAlternateBaseTest {
       gotit.set(true);
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
-      if (handler.failed()) context.fail(handler.cause());
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
+        if (handler.failed()) context.fail(handler.cause());
     });
 
     rule.vertx().setTimer(1000 * 2, timerHandler -> {

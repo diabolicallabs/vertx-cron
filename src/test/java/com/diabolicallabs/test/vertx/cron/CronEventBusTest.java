@@ -68,7 +68,7 @@ public class CronEventBusTest {
       gotit.set(true);
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
 
@@ -92,7 +92,7 @@ public class CronEventBusTest {
       gotit.set(true);
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
 
@@ -137,7 +137,7 @@ public class CronEventBusTest {
     });
 
     DeliveryOptions options = new DeliveryOptions().setSendTimeout(threeMinutes);
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, options, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, options, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
 
@@ -161,7 +161,7 @@ public class CronEventBusTest {
       got2.set(true);
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
 
@@ -191,7 +191,7 @@ public class CronEventBusTest {
       async.complete();
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
   }
@@ -216,7 +216,7 @@ public class CronEventBusTest {
       async.complete();
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
   }
@@ -251,7 +251,7 @@ public class CronEventBusTest {
       });
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       id.set((String) handler.result().body());
       System.out.println("Id: " + id.get());
       if (handler.failed()) context.fail(handler.cause());
@@ -289,7 +289,7 @@ public class CronEventBusTest {
       });
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       id.set((String) handler.result().body());
       System.out.println("Id: " + id.get());
       if (handler.failed()) context.fail(handler.cause());
@@ -309,7 +309,7 @@ public class CronEventBusTest {
       gotit.set(true);
     });
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.failed()) context.fail(handler.cause());
     });
 
@@ -327,7 +327,7 @@ public class CronEventBusTest {
     JsonObject event = event();
     event.remove("cron_expression");
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.succeeded()) context.fail("Should have failed due to bad cronspec");
       if (handler.failed()) {
         context.assertEquals("Message must contain cron_expression", handler.cause().getMessage());
@@ -344,7 +344,7 @@ public class CronEventBusTest {
     JsonObject event = event();
     event.remove("address");
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.succeeded()) context.fail("Should have failed due to bad cronspec");
       if (handler.failed()) {
         context.assertEquals("Message must contain the address to schedule", handler.cause().getMessage());
@@ -360,7 +360,7 @@ public class CronEventBusTest {
 
     JsonObject event = event().put("timezone_name", "USSR/Honolulu");
 
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.succeeded()) context.fail("Should have failed due to bad timezone");
       if (handler.failed()) {
         context.assertEquals("timezone_name USSR/Honolulu is invalid", handler.cause().getMessage());
@@ -375,7 +375,7 @@ public class CronEventBusTest {
     Async async = context.async();
 
     JsonObject event = event().put("cron_expression", "SQUID");
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.succeeded()) context.fail("Should have failed due to bad cronspec");
       if (handler.failed()) {
         context.assertEquals("Invalid cronspec SQUID", handler.cause().getMessage());
@@ -390,7 +390,7 @@ public class CronEventBusTest {
     Async async = context.async();
 
     JsonObject event = event().put("action", "SQUID");
-    rule.vertx().eventBus().send(BASE_ADDRESS, event, handler -> {
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
       if (handler.succeeded()) context.fail("Should have failed due to bad action");
       if (handler.failed()) {
         context.assertEquals("action must be 'send' or 'publish'", handler.cause().getMessage());
