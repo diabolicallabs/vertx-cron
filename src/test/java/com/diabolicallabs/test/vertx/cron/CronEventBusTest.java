@@ -1,6 +1,6 @@
 package com.diabolicallabs.test.vertx.cron;
 
-import com.diabolicallabs.vertx.cron.CronEventSchedulerVertical;
+import com.diabolicallabs.vertx.cron.CronEventSchedulerVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -50,7 +50,7 @@ public class CronEventBusTest {
   @Before
   public void before(TestContext context) {
 
-    rule.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), context.asyncAssertSuccess(id -> {
+    rule.vertx().deployVerticle(CronEventSchedulerVerticle.class.getName(), context.asyncAssertSuccess(id -> {
       System.out.println("CronEventSchedulerVertical deployment id: " + id);
     }));
   }

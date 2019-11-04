@@ -1,6 +1,6 @@
 package com.diabolicallabs.test.vertx.cron;
 
-import com.diabolicallabs.vertx.cron.CronEventSchedulerVertical;
+import com.diabolicallabs.vertx.cron.CronEventSchedulerVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -28,7 +28,7 @@ public class CronEventBusAlternateBaseTest {
     JsonObject config = new JsonObject().put("address_base", "alternate");
     DeploymentOptions options = new DeploymentOptions().setConfig(config);
 
-    rule.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), options, context.asyncAssertSuccess(id -> {
+    rule.vertx().deployVerticle(CronEventSchedulerVerticle.class.getName(), options, context.asyncAssertSuccess(id -> {
       System.out.println("CronEventSchedulerVertical deployment id: " + id);
     }));
   }
