@@ -239,7 +239,7 @@ public class CronEventBusTest {
       rule.vertx().eventBus().publish("cron.cancel", id.get());
       System.out.println("Publishing cancel");
       //wait a couple of secs to clear the hits
-      rule.vertx().setTimer(2000, firstHandler -> {
+      rule.vertx().setTimer(4000, firstHandler -> {
         System.out.println("Setting hits to zero");
         hits.set(0);
         //make sure it's still zero
@@ -277,7 +277,7 @@ public class CronEventBusTest {
       rule.vertx().eventBus().publish("cron.cancel", id.get());
       System.out.println("Publishing cancel");
       //wait a couple of secs to clear the hits
-      rule.vertx().setTimer(2000, firstHandler -> {
+      rule.vertx().setTimer(4000, firstHandler -> {
         System.out.println("Setting hits to zero");
         hits.set(0);
         //make sure it's still zero
