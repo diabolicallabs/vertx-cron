@@ -221,7 +221,7 @@ public class CronEventBusTest {
     });
   }
 
-  @Test
+  //@Test
   public void testCancel(TestContext context) {
 
     Async async = context.async();
@@ -258,7 +258,7 @@ public class CronEventBusTest {
     });
   }
 
-  @Test
+  //@Test
   public void testDoubleCancel(TestContext context) {
 
     Async async = context.async();
