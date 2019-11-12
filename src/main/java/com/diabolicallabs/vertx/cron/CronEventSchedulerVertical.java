@@ -2,6 +2,7 @@ package com.diabolicallabs.vertx.cron;
 
 import io.reactivex.Scheduler;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -20,7 +21,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
   Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Promise<Void> startFuture) throws Exception {
 
     EventBus eb = vertx.eventBus();
 
@@ -97,7 +98,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
         .subscribe(
           timestamped -> {
             if (action.equals("send")) {
-              eb.send(scheduledAddress, scheduledMessage, scheduledAddressHandler -> {
+              eb.request(scheduledAddress, scheduledMessage, scheduledAddressHandler -> {
                 if (resultAddress != null) {
                   if (scheduledAddressHandler.succeeded()) {
                     eb.send(resultAddress, scheduledAddressHandler.result().body());
