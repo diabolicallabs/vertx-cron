@@ -6,7 +6,7 @@
     <groupId>com.diabolicallabs</groupId>
     <artifactId>vertx-cron</artifactId>
     <packaging>jar</packaging>
-    <version>3.8.3-SNAPSHOT</version>
+    <version>3.8.3</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
