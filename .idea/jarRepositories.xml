@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteRepositoriesConfiguration">
+    <remote-repository>
+      <option name="id" value="jboss-techpreview-repository" />
+      <option name="name" value="JBoss Tech Preview" />
+      <option name="url" value="https://nexus.diabolicallabs.com/repository/redhat-techpreview-repository/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss-public-repository" />
+      <option name="name" value="JBoss Public" />
+      <option name="url" value="https://nexus.diabolicallabs.com/repository/jboss-public-repository/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="diabolicallabs-SNAPSHOT" />
+      <option name="name" value="Diabolical Labs Snapshot repository" />
+      <option name="url" value="https://nexus.diabolicallabs.com/repository/diabolicallabs-SNAPSHOT/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="sonatype-nexus-snapshots" />
+      <option name="name" value="Sonatype Nexus Snapshots" />
+      <option name="url" value="https://oss.sonatype.org/content/repositories/snapshots" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="diabolicallabs" />
+      <option name="name" value="Diabolical Labs repository" />
+      <option name="url" value="https://nexus.diabolicallabs.com/repository/diabolicallabs/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="redhat-ga-repository" />
+      <option name="name" value="Red Hat GA repository" />
+      <option name="url" value="https://nexus.diabolicallabs.com/repository/redhat-ga-repository/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+  </component>
+</project>
