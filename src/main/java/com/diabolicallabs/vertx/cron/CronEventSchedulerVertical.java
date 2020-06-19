@@ -34,7 +34,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
 
       String id = (String) handler.body();
       SharedData sd = vertx.sharedData();
-      sd.getLocalMap(addressBase + "cron.ids").remove(id);
+      sd.getLocalMap(addressBase + ".cron.ids").remove(id);
 
       handler.reply(null);
     });
