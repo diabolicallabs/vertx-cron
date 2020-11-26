@@ -452,14 +452,14 @@ public class CronEventBusTest {
 
     String address = UUID.randomUUID().toString();
     // Make sure the action to set to send. We'll have to send several triggers to make sure they
-    // are all sent to the first vertx instance.
+    // are all sent to the first and only the first vertx instance.
     JsonObject event = event().put("address", address).put("action", "send").put("local_only", true);
 
     // Add a trigger count to the first vertx instance, to track the number of received triggers.
     AtomicInteger triggerCount1 = new AtomicInteger(0);
     rule.vertx().eventBus().consumer(address, handler -> triggerCount1.incrementAndGet());
 
-    // Add a trigger count to the first vertx instance, to track the number of received triggers.
+    // Add a trigger count to the second vertx instance, to track the number of received triggers.
     AtomicInteger triggerCount2 = new AtomicInteger(0);
     rule2.vertx().eventBus().consumer(address, handler -> triggerCount2.incrementAndGet());
 
