@@ -101,10 +101,10 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
           timestamped -> {
             DeliveryOptions deliveryOptions = new DeliveryOptions().setLocalOnly(localOnly);
             if (action.equals("send")) {
-              eb.request(scheduledAddress, scheduledMessage, scheduledAddressHandler -> {
+              eb.request(scheduledAddress, scheduledMessage, deliveryOptions, scheduledAddressHandler -> {
                 if (resultAddress != null) {
                   if (scheduledAddressHandler.succeeded()) {
-                    eb.send(resultAddress, scheduledAddressHandler.result().body(), deliveryOptions);
+                    eb.send(resultAddress, scheduledAddressHandler.result().body());
                   } else {
                     if (scheduledAddressHandler.failed()) {
                       logger.error("Message to " + resultAddress + " failed.", scheduledAddressHandler.cause());
