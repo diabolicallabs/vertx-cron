@@ -47,6 +47,12 @@ public class CronEventBusTest {
   @Rule
   public RunTestOnContext rule = new RunTestOnContext(supplier);
 
+  /**
+   * A second context for tests that require multiple vertx instances on the same cluster.
+   */
+  @Rule
+  public RunTestOnContext rule2 = new RunTestOnContext(supplier);
+
   @Before
   public void before(TestContext context) {
 
@@ -315,6 +321,160 @@ public class CronEventBusTest {
 
     rule.vertx().setTimer(1000 * 2, timerHandler -> {
       context.assertTrue(gotit.get());
+      async.complete();
+    });
+  }
+
+  /**
+   * The purpose of this test is to assert that the default value of the local_only configuration
+   * property is false.
+   */
+  @Test
+  public void testPublishWithoutLocalOnly(TestContext context) {
+
+    Async async = context.async();
+
+    // Deploy a second vertx instance to the cluster, to test that both instances receive the
+    // trigger (i.e. the trigger is published to the entire cluster).
+    rule2.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), context.asyncAssertSuccess(id -> {
+      System.out.println("CronEventSchedulerVertical2 deployment id: " + id);
+    }));
+
+    String address = UUID.randomUUID().toString();
+    // Make sure the action to set to publish.
+    JsonObject event = event().put("address", address).put("action", "publish");
+
+    // Add a trigger consumer to the first vertx instance.
+    AtomicBoolean gotit1 = new AtomicBoolean(false);
+    rule.vertx().eventBus().consumer(address, handler -> gotit1.set(true));
+
+    // Add a trigger consumer to the second vertx instance.
+    AtomicBoolean gotit2 = new AtomicBoolean(false);
+    rule2.vertx().eventBus().consumer(address, handler -> gotit2.set(true));
+
+    // Send the schedule request to the first vertx instance. Both instances are expected to
+    // receive the resulting triggers.
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
+      if (handler.failed()) context.fail(handler.cause());
+    });
+
+    rule.vertx().setTimer(1000 * 2, timerHandler -> {
+      context.assertTrue(gotit1.get());
+      context.assertTrue(gotit2.get());
+      async.complete();
+    });
+  }
+
+  @Test
+  public void testPublishWithLocalOnlyFalse(TestContext context) {
+
+    Async async = context.async();
+
+    // Deploy a second vertx instance to the cluster, to test that both instances receive the
+    // trigger (i.e. the trigger is published to the entire cluster).
+    rule2.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), context.asyncAssertSuccess(id -> {
+      System.out.println("CronEventSchedulerVertical2 deployment id: " + id);
+    }));
+
+    String address = UUID.randomUUID().toString();
+    // Make sure the action to set to publish.
+    JsonObject event = event().put("address", address).put("action", "publish").put("local_only", false);
+
+    // Add a trigger consumer to the first vertx instance.
+    AtomicBoolean gotit1 = new AtomicBoolean(false);
+    rule.vertx().eventBus().consumer(address, handler -> gotit1.set(true));
+
+    // Add a trigger consumer to the second vertx instance.
+    AtomicBoolean gotit2 = new AtomicBoolean(false);
+    rule2.vertx().eventBus().consumer(address, handler -> gotit2.set(true));
+
+    // Send the schedule request to the first vertx instance. Both instances are expected to
+    // receive the resulting triggers.
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, handler -> {
+      if (handler.failed()) context.fail(handler.cause());
+    });
+
+    rule.vertx().setTimer(1000 * 2, timerHandler -> {
+      context.assertTrue(gotit1.get());
+      context.assertTrue(gotit2.get());
+      async.complete();
+    });
+  }
+
+  @Test
+  public void testPublishWithLocalOnlyTrue(TestContext context) {
+
+    Async async = context.async();
+
+    // Deploy a second vertx instance to the cluster, to test that only one instance receives the
+    // trigger (i.e. the trigger is only published locally).
+    rule2.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), context.asyncAssertSuccess(id -> {
+      System.out.println("CronEventSchedulerVertical2 deployment id: " + id);
+    }));
+
+    String address = UUID.randomUUID().toString();
+    // Make sure the action to set to publish.
+    JsonObject event = event().put("address", address).put("action", "publish").put("local_only", true);
+
+    // Add a trigger consumer to the first vertx instance.
+    AtomicBoolean gotit1 = new AtomicBoolean(false);
+    rule.vertx().eventBus().consumer(address, handler -> gotit1.set(true));
+
+    // Add a trigger consumer to the second vertx instance.
+    AtomicBoolean gotit2 = new AtomicBoolean(false);
+    rule2.vertx().eventBus().consumer(address, handler -> gotit2.set(true));
+
+    // Send the schedule request to the first vertx instance. This instance is expected to be the
+    // only instance to receive the resulting triggers.
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, new DeliveryOptions().setLocalOnly(true), handler -> {
+      if (handler.failed()) context.fail(handler.cause());
+    });
+
+    rule.vertx().setTimer(1000 * 2, timerHandler -> {
+      // Assert that the first vertx instance received the trigger.
+      context.assertTrue(gotit1.get());
+      // Assert that the second vertx instance did not receive the trigger.
+      context.assertFalse(gotit2.get());
+      async.complete();
+    });
+  }
+
+  @Test
+  public void testSendWithLocalOnlyTrue(TestContext context) {
+
+    Async async = context.async();
+
+    // Deploy a second vertx instance to the cluster, to test that only one instance receives the
+    // trigger (i.e. the trigger is only sent locally).
+    rule2.vertx().deployVerticle(CronEventSchedulerVertical.class.getName(), context.asyncAssertSuccess(id -> {
+      System.out.println("CronEventSchedulerVertical2 deployment id: " + id);
+    }));
+
+    String address = UUID.randomUUID().toString();
+    // Make sure the action to set to send. We'll have to send several triggers to make sure they
+    // are all sent to the first and only the first vertx instance.
+    JsonObject event = event().put("address", address).put("action", "send").put("local_only", true);
+
+    // Add a trigger count to the first vertx instance, to track the number of received triggers.
+    AtomicInteger triggerCount1 = new AtomicInteger(0);
+    rule.vertx().eventBus().consumer(address, handler -> triggerCount1.incrementAndGet());
+
+    // Add a trigger count to the second vertx instance, to track the number of received triggers.
+    AtomicInteger triggerCount2 = new AtomicInteger(0);
+    rule2.vertx().eventBus().consumer(address, handler -> triggerCount2.incrementAndGet());
+
+    // Send the schedule request to the first vertx instance. This instance is expected to be the
+    // only instance to receive the resulting triggers.
+    rule.vertx().eventBus().request(BASE_ADDRESS, event, new DeliveryOptions().setLocalOnly(true), handler -> {
+      if (handler.failed()) context.fail(handler.cause());
+    });
+
+    rule.vertx().setTimer((long) (1000 * 10.5), timerHandler -> {
+      System.out.println("Trigger count 2: " + triggerCount2);
+      // Assert that the first vertx instance received every trigger.
+      context.assertEquals(10, triggerCount1.get());
+      // Assert that the second vertx instance did not receive any triggers.
+      context.assertEquals(0, triggerCount2.get());
       async.complete();
     });
   }

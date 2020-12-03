@@ -3,6 +3,7 @@ package com.diabolicallabs.vertx.cron;
 import io.reactivex.Scheduler;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -75,6 +76,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
       Object scheduledMessage = message.getValue("message");
       String action = message.getString("action", "send");
       String resultAddress = message.getString("result_address");
+      Boolean localOnly = message.getBoolean("local_only", false);
 
       SharedData sd = vertx.sharedData();
       String id;
@@ -97,8 +99,9 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
         })
         .subscribe(
           timestamped -> {
+            DeliveryOptions deliveryOptions = new DeliveryOptions().setLocalOnly(localOnly);
             if (action.equals("send")) {
-              eb.request(scheduledAddress, scheduledMessage, scheduledAddressHandler -> {
+              eb.request(scheduledAddress, scheduledMessage, deliveryOptions, scheduledAddressHandler -> {
                 if (resultAddress != null) {
                   if (scheduledAddressHandler.succeeded()) {
                     eb.send(resultAddress, scheduledAddressHandler.result().body());
@@ -110,7 +113,7 @@ public class CronEventSchedulerVertical extends AbstractVerticle {
                 }
               });
             } else {
-              eb.publish(scheduledAddress, scheduledMessage);
+              eb.publish(scheduledAddress, scheduledMessage, deliveryOptions);
             }
           },
           fault -> {
