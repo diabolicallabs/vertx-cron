@@ -46,7 +46,7 @@
 
     <properties>
         <main.verticle>com.diabolicallabs.vertx.cron.CronEventSchedulerVertical</main.verticle>
-        <vertx.version>3.9.4</vertx.version>
+        <vertx.version>4.5.24</vertx.version>
     </properties>
 
     <dependencies>
